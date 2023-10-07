@@ -33,11 +33,7 @@ class System:
 
     def pretty(self):
         msg = [
-            "  Base product: {}-{}-{}".format(
-                self._data["base"].name,
-                self._data["base"].version,
-                self._data["base"].arch,
-            )
+            f'  Base product: {self._data["base"].name}-{self._data["base"].version}-{self._data["base"].arch}'
         ]
         if self._data["addons"]:
             msg += ["  Installed Extensions and Modules:"]
@@ -48,19 +44,13 @@ class System:
         return msg
 
     def to_refhost_dict_partially_normalized(self):
-        ret = {}
-        # simple values
-        ret["location"] = ["some location"]
-        ret["arch"] = self.arch()
+        ret = {"location": ["some location"], "arch": self.arch()}
         ret["product"] = self._get_base_dict_partialy_normalized()
         ret["addons"] = self._get_addons_list_partialy_normalized()
         return ret
 
     def to_refhost_dict(self):
-        ret = {}
-        # simple values
-        ret["location"] = ["some location"]
-        ret["arch"] = self.arch()
+        ret = {"location": ["some location"], "arch": self.arch()}
         ret["product"] = self._get_base_dict()
         ret["addons"] = self._get_addons_list()
         return ret
@@ -81,17 +71,16 @@ class System:
         return self._data["base"]
 
     def _get_base_dict(self):
-        ret = {"name": self._data["base"].name}
-        ret.update({"version": self._data["base"].version})
-        return ret
+        return {"name": self._data["base"].name, "version": self._data["base"].version}
 
     def _get_addons_list(self):
         return [{"name": x.name, "version": x.version} for x in self._data["addons"]]
 
     def _get_base_dict_partialy_normalized(self):
-        ret = {"name": self._data["base"].name}
-        ret.update({"version": transform_version_partialy(self._data["base"].version)})
-        return ret
+        return {
+            "name": self._data["base"].name,
+            "version": transform_version_partialy(self._data["base"].version),
+        }
 
     def _get_addons_list_partialy_normalized(self):
         return [

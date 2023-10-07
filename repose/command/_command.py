@@ -51,24 +51,24 @@ class Command(object):
 
         if self.targets[target].out[-1][3] == 0:
             for line in self.targets[target].out[-1][1].splitlines():
-                logger.info(blue("{}".format(target)) + " - {}".format(line))
+                logger.info(f'{blue(f"{target}")} - {line}')
         elif self.targets[target].out[-1][3] == 4:
             for line in self.targets[target].out[-1][1].splitlines():
-                logger.warning(blue("{}".format(target)) + " - {}".format(line))
+                logger.warning(f'{blue(f"{target}")} - {line}')
         else:
             for line in self.targets[target].out[-1][2].splitlines():
-                logger.warning(blue("{}".format(target)) + " - {}".format(line))
+                logger.warning(f'{blue(f"{target}")} - {line}')
 
     @staticmethod
     def check_url(url):
         state = True
         try:
-            urlopen(url + "repodata/repomd.xml")
+            urlopen(f"{url}repodata/repomd.xml")
         except (HTTPError, URLError):
             state = False
         if not state:
             try:
-                urlopen(url + "suse/repodata/repomd.xml")
+                urlopen(f"{url}suse/repodata/repomd.xml")
             except (HTTPError, URLError):
                 state = False
         return state

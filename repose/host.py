@@ -10,13 +10,13 @@ class HostParseError(ValueError, ArgumentTypeError):
     # by L{argparse.ArgumentParser._get_value}
 
     def __init__(self, message):
-        super(HostParseError, self).__init__("Target host: " + message)
+        super(HostParseError, self).__init__(f"Target host: {message}")
 
 
 class PortNotIntError(HostParseError):
     def __init__(self, hostname):
         super(PortNotIntError, self).__init__(
-            "Wrong port specification on Host: {}".format(hostname)
+            f"Wrong port specification on Host: {hostname}"
         )
 
 
@@ -25,10 +25,10 @@ class ParseHosts(dict):
         """
         arg is string with hosts in socket format username@host:port
         """
-        x = urlparse("{}{}".format("//", arg))
+        x = urlparse(f"//{arg}")
         try:
             if x.port:
-                keyname = "{}:{}".format(x.hostname, x.port)
+                keyname = f"{x.hostname}:{x.port}"
                 port = x.port
             else:
                 keyname = x.hostname

@@ -11,7 +11,7 @@ class Clear(Command):
     command = True
 
     def _clear(self, host):
-        return set(r.alias for r in self.targets[host].raw_repos)
+        return {r.alias for r in self.targets[host].raw_repos}
 
     def _run(self, host):
         repoaliases = self._clear(host)
@@ -25,7 +25,7 @@ class Clear(Command):
             )
         else:
             self.targets[host].run(self.rrcmd.format(repos=" ".join(repoaliases)))
-            logger.info("Repositories cleared from {}".format(host))
+            logger.info(f"Repositories cleared from {host}")
 
     def run(self):
         self.targets.read_repos()

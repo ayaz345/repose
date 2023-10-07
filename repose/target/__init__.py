@@ -25,17 +25,11 @@ class Target(object):
         self.out = []
 
     def __repr__(self):
-        return "<{} object {}@{}:{} - connected: {}>".format(
-            self.__class__.__name__,
-            self.username,
-            self.hostname,
-            self.port,
-            self.is_connected,
-        )
+        return f"<{self.__class__.__name__} object {self.username}@{self.hostname}:{self.port} - connected: {self.is_connected}>"
 
     def connect(self):
         if not self.is_connected:
-            logger.info("Connecting to {}:{}".format(self.hostname, self.port))
+            logger.info(f"Connecting to {self.hostname}:{self.port}")
             try:
                 self.connection.connect()
             except BaseException as e:
@@ -60,23 +54,21 @@ class Target(object):
         return self.is_connected
 
     def run(self, command, lock=None):
-        logger.debug("run {} on {}:{}".format(command, self.hostname, self.port))
+        logger.debug(f"run {command} on {self.hostname}:{self.port}")
         time_before = timestamp()
 
         try:
             stdout, stderr, exitcode = self.connection.run(command, lock)
         except CommandTimeout:
-            logger.critical('{}: command "{}" timed out'.format(self.hostname, command))
+            logger.critical(f'{self.hostname}: command "{command}" timed out')
             exitcode = -1
         except AssertionError:
             logger.debug("zombie command terminated", exc_info=True)
             return
         except Exception as e:
             # failed to run command
-            logger.error(
-                '{}: failed to run command "{}"'.format(self.hostname, command)
-            )
-            logger.debug("exception {}".format(e), exc_info=True)
+            logger.error(f'{self.hostname}: failed to run command "{command}"')
+            logger.debug(f"exception {e}", exc_info=True)
             exitcode = -1
 
         runtime = int(timestamp()) - int(time_before)
@@ -99,16 +91,12 @@ class Target(object):
                 self.raw_repos = parse_repositories(stdout)
             else:
                 logger.error(
-                    "Can't parse repositories on {}, zypper returned {} exitcode".format(
-                        self.hostname, exitcode
-                    )
+                    f"Can't parse repositories on {self.hostname}, zypper returned {exitcode} exitcode"
                 )
-                logger.debug("output:\n {}".format(stderr))
-                raise ValueError(
-                    "Can't read repositories on {}:{}".format(self.hostname, self.port)
-                )
+                logger.debug(f"output:\n {stderr}")
+                raise ValueError(f"Can't read repositories on {self.hostname}:{self.port}")
         else:
-            logger.debug("Host {}:{} not connected".format(self.hostname, self.port))
+            logger.debug(f"Host {self.hostname}:{self.port} not connected")
 
     def report_products(self, sink):
         return sink(self.hostname, self.port, self.products)

@@ -48,16 +48,16 @@ class Remove(Command):
         patterns = self._calculate_pattern(self.repa, host)
 
         if not patterns:
-            logger.info("For {} no repos for remove found".format(host))
+            logger.info(f"For {host} no repos for remove found")
             return
         repolist = self._calculate_repolist(host, patterns)
 
         if not repolist:
-            logger.info("For {} no repos for remove found".format(host))
+            logger.info(f"For {host} no repos for remove found")
         cmd = self.rrcmd.format(repos=" ".join(repolist))
 
         if self.dryrun:
-            print(blue(host) + " - {}".format(cmd))
+            print(f"{blue(host)} - {cmd}")
         else:
             self.targets[host].run(cmd)
             self._report_target(host)

@@ -40,9 +40,7 @@ class ConnectingTargetFailedMessage(UserMessage):
         self.port = port
 
     def __str__(self):
-        return "connecting to {}:{} failed: {}".format(
-            self.hostname, self.port, self.reason
-        )
+        return f"connecting to {self.hostname}:{self.port} failed: {self.reason}"
 
     def __repr__(self):
         return "<{0} {1!r}:{2!r}>".format(self.__class__, self.hostname, self.reason)
@@ -61,6 +59,4 @@ class UnsuportedProductMessage(UserMessage):
         self.product = product
 
     def __str__(self):
-        return "Unsupported product {} version {}".format(
-            self.product.name, self.product.version
-        )
+        return f"Unsupported product {self.product.name} version {self.product.version}"

@@ -22,7 +22,4 @@ def main():
         logger.setLevel("DEBUG")
     elif args.quiet:
         logger.setLevel(level="WARNING")
-    else:
-        pass
-
     args.func(args)
