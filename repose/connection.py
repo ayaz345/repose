@@ -57,9 +57,7 @@ class Connection(object):
         self.client = paramiko.SSHClient()
 
     def __repr__(self):
-        return "<{} object username={} hostname={} port={}>".format(
-            self.__class__.__name__, self.username, self.hostname, self.port
-        )
+        return f"<{self.__class__.__name__} object username={self.username} hostname={self.hostname} port={self.port}>"
 
     def __load_keys(self):
         self.client.load_system_host_keys()
@@ -79,7 +77,7 @@ class Connection(object):
         opts = cfg.lookup(self.hostname)
 
         try:
-            logger.debug("connecting to {}:{}".format(self.hostname, self.port))
+            logger.debug(f"connecting to {self.hostname}:{self.port}")
             # if this fails, the user most likely has none or an outdated
             # hostkey for the specified host. checking back with a manual
             # "ssh root@..." invocation helps in most cases.
@@ -99,9 +97,7 @@ class Connection(object):
             # if public key auth fails, fallback to a password prompt.
             # other than ssh, mtui asks only once for a password. this could
             # be changed if there is demand for it.
-            logger.warning(
-                "Authentication failed on {}: AuthKey missing.".format(self.hostname)
-            )
+            logger.warning(f"Authentication failed on {self.hostname}: AuthKey missing.")
             logger.warning("Trying manually, please enter the root password")
             password = getpass.getpass()
 
@@ -123,34 +119,28 @@ class Connection(object):
                 # if a wrong password was set, don't connect to the host and
                 # reraise the exception hoping it's catched somewhere in an
                 # upper layer.
-                logger.error(
-                    "Authentication failed on {}: wrong password".format(self.hostname)
-                )
+                logger.error(f"Authentication failed on {self.hostname}: wrong password")
                 raise
         except paramiko.SSHException:
             # unspecified general SSHException. the host/sshd is probably not
             # available.
-            logger.error("SSHException while connecting to {}".format(self.hostname))
+            logger.error(f"SSHException while connecting to {self.hostname}")
             raise
         except Exception as error:
             # general Exception
-            logger.error("{}: {}".format(self.hostname, error))
+            logger.error(f"{self.hostname}: {error}")
             raise
 
     def reconnect(self):
         if not self.is_active():
-            logger.debug(
-                "lost connection to {}:{}, reconnecting".format(
-                    self.hostname, self.port
-                )
-            )
+            logger.debug(f"lost connection to {self.hostname}:{self.port}, reconnecting")
 
             self.connect()
 
             assert self.is_active()
 
     def new_session(self):
-        logger.debug("Creating new session at {}:{}".format(self.hostname, self.port))
+        logger.debug(f"Creating new session at {self.hostname}:{self.port}")
         try:
             transport = self.client.get_transport()
             transport.set_keepalive(60)
@@ -160,11 +150,7 @@ class Connection(object):
             session.settimeout(0)
 
         except paramiko.SSHException:
-            logger.debug(
-                "Creating of new session at {}:{} failed".format(
-                    self.hostname, self.port
-                )
-            )
+            logger.debug(f"Creating of new session at {self.hostname}:{self.port} failed")
             if "session" in locals():
                 session.close()
             session = None
@@ -237,8 +223,7 @@ class Connection(object):
 
                 try:
                     if input(
-                        'command "%s" timed out on %s. wait? (y/N) '
-                        % (command, self.hostname)
+                        f'command "{command}" timed out on {self.hostname}. wait? (y/N) '
                     ).lower() in ["y", "yes"]:
                         continue
                     else:
@@ -337,7 +322,7 @@ class Connection(object):
 
     def readlink(self, path):
         """Return the target of a symbolic link (shortcut)."""
-        logger.debug("read link {}:{}:{}".format(self.hostname, self.port, path))
+        logger.debug(f"read link {self.hostname}:{self.port}:{path}")
 
         sftp = self.__sftp_reconnect()
         link = sftp.readlink(path)
@@ -352,5 +337,5 @@ class Connection(object):
         """closes SSH channel to host and disconnects
         Keyword arguments: None
         """
-        logger.debug("closing connection to {}:{}".format(self.hostname, self.port))
+        logger.debug(f"closing connection to {self.hostname}:{self.port}")
         self.client.close()

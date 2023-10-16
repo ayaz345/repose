@@ -82,7 +82,7 @@ class Repoq(object):
         template = self.template.copy()
         result = {}
         for product in installed:
-            name = "{}:{}::".format(product.name, product.version)
+            name = f"{product.name}:{product.version}::"
             rlist = []
             try:
                 for repo in template[product.name][product.version]["default_repos"]:
@@ -104,7 +104,7 @@ class Repoq(object):
                             .get("enabled", False),
                         )
                     )
-                result.update({product.name: rlist})
+                result[product.name] = rlist
             except KeyError:
                 raise UnsuportedProductMessage(product)
         return result

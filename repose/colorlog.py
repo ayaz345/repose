@@ -24,27 +24,26 @@ class ColorFormatter(logging.Formatter):
         logging.Formatter.__init__(self, msg)
 
     def formatColor(self, levelname):
-        if levelname == "DEBUG":
-            caller = inspect.currentframe()
-            frame, filename, line, function, _, _ = inspect.getouterframes(caller)[9]
-            try:
-                module = inspect.getmodule(frame).__name__
-            except Exception:
-                module = "unknown"
-            return (
-                "\033[2K"
-                + COLOR_SEQ.format(30 + COLORS[levelname])
-                + levelname.lower()
-                + RESET_SEQ
-                + " [{!s}:{!s}]".format(module, function)
-            )
-        else:
+        if levelname != "DEBUG":
             return (
                 "\033[2K"
                 + COLOR_SEQ.format(30 + COLORS[levelname])
                 + levelname.lower()
                 + RESET_SEQ
             )
+        caller = inspect.currentframe()
+        frame, filename, line, function, _, _ = inspect.getouterframes(caller)[9]
+        try:
+            module = inspect.getmodule(frame).__name__
+        except Exception:
+            module = "unknown"
+        return (
+            "\033[2K"
+            + COLOR_SEQ.format(30 + COLORS[levelname])
+            + levelname.lower()
+            + RESET_SEQ
+            + " [{!s}:{!s}]".format(module, function)
+        )
 
     def format(self, record):
         record.message = record.getMessage()

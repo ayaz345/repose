@@ -15,6 +15,6 @@ def transform_version_partialy(version):
     ret = {"major": major}
 
     if minor is not None:
-        ret.update({"minor": minor})
+        ret["minor"] = minor
 
     return ret

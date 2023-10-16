@@ -16,7 +16,7 @@ class Reset(Clear):
         repoq = self._init_repoq()
         cmds = set()
         repolist = chain.from_iterable(
-            x for x in repoq.solve_product(self.targets[target].products).values()
+            iter(repoq.solve_product(self.targets[target].products).values())
         )
         cmds.update(
             self.addcmd.format(
@@ -38,14 +38,14 @@ class Reset(Clear):
                     + " - {}".format(self.rrcmd.format(repos=" ".join(repoaliases)))
                 )
                 for cmd in cmds:
-                    print(blue(host) + " - {}".format(cmd))
+                    print(f"{blue(host)} - {cmd}")
             else:
                 self.targets[host].run(self.rrcmd.format(repos=" ".join(repoaliases)))
                 for cmd in cmds:
                     self.targets[host].run(cmd)
                     self._report_target(host)
         except UnsuportedProductMessage as e:
-            logger.error("Refhost {} - {}".format(host, e))
+            logger.error(f"Refhost {host} - {e}")
 
     def run(self):
         self.targets.read_products()

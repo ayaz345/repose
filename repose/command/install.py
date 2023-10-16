@@ -20,12 +20,12 @@ class Install(Command):
             except ValueError as error:
                 logger.error(error)
 
-        for repo in chain.from_iterable(x for x in (y for y in repositories.values())):
+        for repo in chain.from_iterable(iter(iter(repositories.values()))):
             addcmd = self.addcmd.format(
                 name=repo.name, url=repo.url, params="-cfkn" if repo.refresh else "-ckn"
             )
             if self.dryrun:
-                print(blue("{}".format(target)) + " - {}".format(addcmd))
+                print(f'{blue(f"{target}")} - {addcmd}')
             else:
                 self.targets[target].run(addcmd)
                 self._report_target(target)
@@ -34,7 +34,7 @@ class Install(Command):
         if repositories.keys():
             inscmd = self.ipdcmd.format(products=" ".join(repositories.keys()))
             if self.dryrun:
-                print(blue(str(target)) + " - {}".format(inscmd))
+                print(f"{blue(str(target))} - {inscmd}")
             else:
                 self.targets[target].run(inscmd)
                 self._report_target(target)

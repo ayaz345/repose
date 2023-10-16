@@ -5,10 +5,7 @@ from ..target.parsers import Product
 def _parse_product(name, arch):
     parts = name.split(":")
     # TODO: more check for possible products
-    if len(parts) != 4:
-        return None, None
-
-    return Product(parts[0], parts[1], arch)
+    return (None, None) if len(parts) != 4 else Product(parts[0], parts[1], arch)
 
 
 class Repositories(UserDict):

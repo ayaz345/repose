@@ -17,7 +17,7 @@ def __parse_product(prod):
             if root.find("./patchlevel").text != "0"
             else ""
         )
-        version += "-SP{}".format(sp) if sp else ""
+        version += f"-SP{sp}" if sp else ""
     except AttributeError:
         version = root.find("./version").text
         logger.debug("simpleversion")
@@ -59,7 +59,7 @@ def parse_system(connection):
     basefile = connection.readlink("/etc/products.d/baseproduct")
     files.remove(basefile)
 
-    with connection.open("/etc/products.d/{}".format(basefile)) as f:
+    with connection.open(f"/etc/products.d/{basefile}") as f:
         logger.debug("Parsing basefile")
         name, version, arch = __parse_product(f)
         base = Product(name, version, arch)
@@ -67,8 +67,8 @@ def parse_system(connection):
     addons = set()
 
     for x in files:
-        with connection.open("/etc/products.d/{}".format(x)) as f:
-            logger.debug("parsing - {}".format(x))
+        with connection.open(f"/etc/products.d/{x}") as f:
+            logger.debug(f"parsing - {x}")
             name, version, arch = __parse_product(f)
             if name.rpartition("-")[-1] != "migration":
                 addons.add(Product(name, version, arch))

@@ -17,10 +17,11 @@ class Add(Command):
         for repa in self.repa:
             try:
                 repolist += chain.from_iterable(
-                    x
-                    for x in repoq.solve_repa(
-                        repa, self.targets[target].products.get_base()
-                    ).values()
+                    iter(
+                        repoq.solve_repa(
+                            repa, self.targets[target].products.get_base()
+                        ).values()
+                    )
                 )
             except ValueError as error:
                 logger.error(error)
@@ -37,7 +38,7 @@ class Add(Command):
         cmds = self._add(target)
         for cmd in cmds:
             if self.dryrun:
-                print("{} - {}".format(blue(target), cmd))
+                print(f"{blue(target)} - {cmd}")
             else:
                 self.targets[target].run(cmd)
                 self._report_target(target)

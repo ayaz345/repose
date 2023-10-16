@@ -25,24 +25,23 @@ class Uninstall(Remove):
     def _run(self, orepa, host):
         patterns = self._calculate_pattern(orepa, host)
         if not patterns:
-            logger.info("For {} no products for remove found".format(host))
+            logger.info(f"For {host} no products for remove found")
             return
 
-        rdict = self._calculate_repodict(host, patterns)
-        if not rdict:
-            logger.info("For {} no repos for remove found".format(host))
-            rrcmd = False
-        else:
+        if rdict := self._calculate_repodict(host, patterns):
             rrcmd = self.rrcmd.format(
                 repos=" ".join(chain.from_iterable(rdict.values()))
             )
 
+        else:
+            logger.info(f"For {host} no repos for remove found")
+            rrcmd = False
         pdcmd = self.rrpcmd.format(products=" ".join(x.split(":")[0] for x in patterns))
 
         if self.dryrun:
             if rrcmd:
-                print(blue(host) + " - {}".format(rrcmd))
-            print(blue(host) + " - {}".format(pdcmd))
+                print(f"{blue(host)} - {rrcmd}")
+            print(f"{blue(host)} - {pdcmd}")
         else:
             if rrcmd:
                 self.targets[host].run(rrcmd)
